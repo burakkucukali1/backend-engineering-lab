@@ -10,3 +10,5 @@ dist
 # Downloaded database dumps
 database/datasets/*.sql.gz
 
+
+/generated/prisma
