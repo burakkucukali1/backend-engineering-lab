@@ -1,0 +1,33 @@
+/users:
+  get:
+    summary: Get all users
+    tags:
+      - Users
+    responses:
+      "200":
+        description: Users retrieved successfully
+
+  post:
+    summary: Create a new user
+    tags:
+      - Users
+    responses:
+      "201":
+        description: User created successfully
+
+/users/{id}:
+  get:
+    summary: Get user by ID
+    tags:
+      - Users
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    responses:
+      "200":
+        description: User retrieved successfully
+      "404":
+        description: User not found

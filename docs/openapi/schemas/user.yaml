@@ -1,0 +1,78 @@
+User:
+  type: object
+  required:
+    - id
+    - email
+    - firstName
+    - lastName
+    - fullName
+    - createdAt
+    - updatedAt
+  properties:
+    id:
+      type: integer
+      example: 1
+    email:
+      type: string
+      format: email
+      example: burak@example.com
+    firstName:
+      type: string
+      example: Burak
+    lastName:
+      type: string
+      example: Yilmaz
+    fullName:
+      type: string
+      example: Burak Yilmaz
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time
+
+UserSuccessResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    data:
+      $ref: "#/components/schemas/User"
+
+UsersSuccessResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    data:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
+    pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          example: 70
+        totalPages:
+          type: integer
+          example: 7
+
+ErrorResponse:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: false
+    message:
+      type: string
+      example: User not found
