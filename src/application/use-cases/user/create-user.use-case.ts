@@ -8,14 +8,10 @@ import { UserAlreadyExistsError } from "../../errors/user-already-exists.error.j
 import type { User } from "../../../domain/entities/user.entity.js";
 
 export class CreateUserUseCase {
-  constructor(
-    private readonly userRepository: UserRepository,
-  ) {}
+  constructor(private readonly userRepository: UserRepository) {}
 
   async execute(data: CreateUserData): Promise<User> {
-    const existingUser = await this.userRepository.findByEmail(
-      data.email,
-    );
+    const existingUser = await this.userRepository.findByEmail(data.email);
 
     if (existingUser) {
       throw new UserAlreadyExistsError(data.email);

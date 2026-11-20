@@ -44,6 +44,22 @@ export class PrismaUserRepository implements UserRepository {
     return this.toDomain(record);
   }
 
+  async findAll(skip: number, take: number): Promise<User[]> {
+    const records = await this.prisma.user.findMany({
+      skip,
+      take,
+      orderBy: {
+        id: "asc",
+      },
+    });
+
+    return records.map((record) => this.toDomain(record));
+  }
+
+  async count(): Promise<number> {
+    return this.prisma.user.count();
+  }
+
   private toDomain(record: PrismaUser): User {
     return new User({
       id: record.id,
