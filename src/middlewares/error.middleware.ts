@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
 
 import { UserAlreadyExistsError } from "../application/errors/user-already-exists.error.js";
+import { UserNotFoundError } from "../application/errors/user-not-found.error.js";
 
 export function errorMiddleware(
   error: unknown,
@@ -28,6 +29,14 @@ export function errorMiddleware(
 
   if (error instanceof UserAlreadyExistsError) {
     res.status(409).json({
+      success: false,
+      message: error.message,
+    });
+    return;
+  }
+
+  if (error instanceof UserNotFoundError) {
+    res.status(404).json({
       success: false,
       message: error.message,
     });

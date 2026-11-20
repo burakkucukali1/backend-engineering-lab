@@ -4,6 +4,7 @@ import { User } from "../../../domain/entities/user.entity.js";
 
 import type {
   CreateUserData,
+  UpdateUserData,
   UserRepository,
 } from "../../../domain/repositories/user.repository.js";
 
@@ -58,6 +59,15 @@ export class PrismaUserRepository implements UserRepository {
 
   async count(): Promise<number> {
     return this.prisma.user.count();
+  }
+
+  async update(id: number, data: UpdateUserData): Promise<User> {
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data,
+    });
+
+    return this.toDomain(updatedUser);
   }
 
   private toDomain(record: PrismaUser): User {

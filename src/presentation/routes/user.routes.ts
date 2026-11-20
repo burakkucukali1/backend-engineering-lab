@@ -8,6 +8,7 @@ export function createUserRoutes(userController: UserController) {
   router.post("/", userController.create);
   router.get("/", userController.getAll);
   router.get("/:id", userController.getById);
+  router.patch("/:id", userController.update);
 
   return router;
 }
