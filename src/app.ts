@@ -5,7 +5,7 @@ import { createContainer } from "./container.js";
 import healthRoutes from "./routes/health.routes.js";
 import loggerMiddleware from "./middlewares/logger.middleware.js";
 import notFoundMiddleware from "./middlewares/not-found.middleware.js";
-import errorMiddleware from "./middlewares/error.middleware.js";
+import { errorMiddleware } from "./middlewares/error.middleware.js";
 
 const app = express();
 

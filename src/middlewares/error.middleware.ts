@@ -1,17 +1,43 @@
-import type { ErrorRequestHandler } from "express";
+import type { Request, Response, NextFunction } from "express";
+import { ZodError } from "zod";
 
-const errorMiddleware: ErrorRequestHandler = (
-  err,
-  _req,
-  res,
-  _next
-) => {
-  console.error("Application Error:", err);
+import { UserAlreadyExistsError } from "../application/errors/user-already-exists.error.js";
+
+export function errorMiddleware(
+  error: unknown,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
+  if (res.headersSent) {
+    next(error);
+    return;
+  }
+
+  if (error instanceof ZodError) {
+    res.status(400).json({
+      success: false,
+      message: "Validation failed",
+      errors: error.issues.map((issue) => ({
+        field: issue.path.join("."),
+        message: issue.message,
+      })),
+    });
+    return;
+  }
+
+  if (error instanceof UserAlreadyExistsError) {
+    res.status(409).json({
+      success: false,
+      message: error.message,
+    });
+    return;
+  }
+
+  console.error(error);
 
   res.status(500).json({
     success: false,
-    message: "Internal Server Error",
+    message: "Internal server error",
   });
-};
-
-export default errorMiddleware;
+}
