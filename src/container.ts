@@ -13,6 +13,8 @@ import { createAuthRoutes } from "./presentation/routes/auth.routes.js";
 import { JoseTokenService } from "./infrastructure/security/jose-token-service.js";
 import { LoginUseCase } from "./application/use-cases/auth/login.use-case.js";
 import { createAuthMiddleware } from "./middlewares/auth.middleware.js";
+import { AdminController } from "./presentation/controllers/admin.controller.js";
+import { createAdminRoutes } from "./presentation/routes/admin.routes.js";
 
 export function createContainer() {
   const userRepository = new PrismaUserRepository(prisma);
@@ -31,6 +33,8 @@ export function createContainer() {
     tokenService,
   );
 
+  const adminController = new AdminController();
+
   const authController = new AuthController(
     registerUseCase,
     loginUseCase,
@@ -44,14 +48,16 @@ export function createContainer() {
     updateUserUseCase,
   );
 
-  const authMiddleware = createAuthMiddleware(tokenService);
+  const authMiddleware = createAuthMiddleware(tokenService, userRepository);
 
   const userRoutes = createUserRoutes(userController);
   const authRoutes = createAuthRoutes(authController, authMiddleware);
+  const adminRoutes = createAdminRoutes(adminController, authMiddleware);
 
   return {
     userRoutes,
     authRoutes,
+    adminRoutes,
     authMiddleware,
   };
 }

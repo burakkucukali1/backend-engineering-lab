@@ -1,4 +1,5 @@
 import type { User } from "../../domain/entities/user.entity.js";
+import type { UserRole } from "../../domain/enums/user-role.js";
 
 export interface UserResponseDto {
   id: number;
@@ -8,6 +9,7 @@ export interface UserResponseDto {
   fullName: string;
   createdAt: Date;
   updatedAt: Date;
+  role: UserRole;
 }
 
 export function toUserResponseDto(user: User): UserResponseDto {
@@ -19,5 +21,6 @@ export function toUserResponseDto(user: User): UserResponseDto {
     fullName: user.fullName,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    role: user.role,
   };
 }

@@ -22,6 +22,7 @@ app.use(loggerMiddleware);
 app.use("/health", healthRoutes);
 app.use("/users", container.userRoutes);
 app.use("/auth", container.authRoutes);
+app.use("/admin", container.adminRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Error handling

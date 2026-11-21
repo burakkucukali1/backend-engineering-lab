@@ -1,3 +1,4 @@
+import type { UserRole } from "../enums/user-role.js";
 export interface UserProps {
   id: number;
   email: string;
@@ -5,6 +6,7 @@ export interface UserProps {
   lastName: string;
   createdAt: Date;
   updatedAt: Date;
+  role: UserRole;
 }
 
 export class User {
@@ -36,5 +38,9 @@ export class User {
 
   get fullName(): string {
     return `${this.props.firstName} ${this.props.lastName}`;
+  }
+
+  get role() {
+    return this.props.role;
   }
 }

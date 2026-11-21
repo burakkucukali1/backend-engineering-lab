@@ -93,6 +93,7 @@ export class PrismaUserRepository implements UserRepository {
       lastName: record.lastName,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
+      role: record.role,
     });
   }
 }
