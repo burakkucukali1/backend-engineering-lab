@@ -1,17 +1,20 @@
 import { readFileSync } from "node:fs";
-import path from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { parse } from "yaml";
 
-const docsDirectory = path.join(process.cwd(), "docs/openapi");
+const currentDirectory = dirname(fileURLToPath(import.meta.url));
 
-const userSchemas = parse(
-  readFileSync(path.join(docsDirectory, "schemas/user.yaml"), "utf8"),
-);
+function loadYaml(relativePath: string) {
+  const filePath = join(currentDirectory, relativePath);
+  const fileContent = readFileSync(filePath, "utf8");
 
-const userPaths = parse(
-  readFileSync(path.join(docsDirectory, "paths/users.yaml"), "utf8"),
-);
+  return parse(fileContent);
+}
+
+const userSchemas = loadYaml("schemas/user.yaml");
+const userPaths = loadYaml("paths/users.yaml");
 
 const swaggerSpec = {
   openapi: "3.0.0",
