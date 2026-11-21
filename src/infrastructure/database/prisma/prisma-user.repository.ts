@@ -6,6 +6,7 @@ import type {
   CreateUserData,
   UpdateUserData,
   UserRepository,
+  UserCredentials,
 } from "../../../domain/repositories/user.repository.js";
 
 type PrismaUser = Prisma.UserGetPayload<{}>;
@@ -70,6 +71,20 @@ export class PrismaUserRepository implements UserRepository {
     return this.toDomain(updatedUser);
   }
 
+  async findCredentialsByEmail(email: string): Promise<UserCredentials | null> {
+    const record = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!record || !record.passwordHash) {
+      return null;
+    }
+
+    return {
+      user: this.toDomain(record),
+      passwordHash: record.passwordHash,
+    };
+  }
   private toDomain(record: PrismaUser): User {
     return new User({
       id: record.id,

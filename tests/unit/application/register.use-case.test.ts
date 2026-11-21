@@ -32,6 +32,7 @@ describe("RegisterUseCase", () => {
       create: vi.fn().mockResolvedValue(createdUser),
       findById: vi.fn(),
       findAll: vi.fn(),
+      findCredentialsByEmail: vi.fn(),
       count: vi.fn(),
       update: vi.fn(),
     };
@@ -72,6 +73,7 @@ describe("RegisterUseCase", () => {
       create: vi.fn(),
       findById: vi.fn(),
       findAll: vi.fn(),
+      findCredentialsByEmail: vi.fn(),
       count: vi.fn(),
       update: vi.fn(),
     };

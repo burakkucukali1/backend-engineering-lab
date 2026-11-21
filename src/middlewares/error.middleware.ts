@@ -3,6 +3,7 @@ import { ZodError } from "zod";
 
 import { UserAlreadyExistsError } from "../application/errors/user-already-exists.error.js";
 import { UserNotFoundError } from "../application/errors/user-not-found.error.js";
+import { InvalidCredentialsError } from "../application/errors/invalid-credentials.error.js";
 
 export function errorMiddleware(
   error: unknown,
@@ -37,6 +38,14 @@ export function errorMiddleware(
 
   if (error instanceof UserNotFoundError) {
     res.status(404).json({
+      success: false,
+      message: error.message,
+    });
+    return;
+  }
+
+  if (error instanceof InvalidCredentialsError) {
+    res.status(401).json({
       success: false,
       message: error.message,
     });
