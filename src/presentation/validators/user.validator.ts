@@ -43,4 +43,8 @@ export const updateUserSchema = z
     message: "At least one field must be provided",
   });
 
+export const userIdSchema = z.object({
+  id: z.coerce.number().int().positive(),
+});
+
 export type CreateUserInput = z.infer<typeof createUserSchema>;

@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import type { UserRole } from "../domain/enums/user-role.js";
 
 export function requireRole(...allowedRoles: UserRole[]) {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return (_req: Request, res: Response, next: NextFunction): void => {
     const auth = res.locals.auth;
 
     if (!auth) {

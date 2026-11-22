@@ -1,14 +1,10 @@
 import type { Request, Response, NextFunction } from "express";
 
 import { CreateUserUseCase } from "../../application/use-cases/user/create-user.use-case.js";
-
-import { createUserSchema } from "../validators/user.validator.js";
 import { GetUserByIdUseCase } from "../../application/use-cases/user/get-user-by-id.use-case.js";
 import { GetUsersUseCase } from "../../application/use-cases/user/get-users.use-case.js";
-import { toUserResponseDto } from "../dtos/user-response.dto.js";
-import { paginationSchema } from "../validators/user.validator.js";
 import { UpdateUserUseCase } from "../../application/use-cases/user/update-user.use-case.js";
-import { updateUserSchema } from "../validators/user.validator.js";
+import { toUserResponseDto } from "../dtos/user-response.dto.js";
 
 export class UserController {
   constructor(
@@ -24,13 +20,11 @@ export class UserController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const validatedData = createUserSchema.parse(req.body);
-
-      const user = await this.createUserUseCase.execute(validatedData);
+      const user = await this.createUserUseCase.execute(req.body);
 
       res.status(201).json({
         success: true,
-        data: user,
+        data: toUserResponseDto(user),
       });
     } catch (error) {
       next(error);
@@ -38,34 +32,18 @@ export class UserController {
   };
 
   getById = async (
-    req: Request<{ id: string }>,
+    req: Request,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const id = Number(req.params.id);
-
-      if (!Number.isInteger(id) || id <= 0) {
-        res.status(400).json({
-          success: false,
-          message: "Invalid user ID",
-        });
-        return;
-      }
-
-      const user = await this.getUserByIdUseCase.execute(id);
-
-      if (!user) {
-        res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
-        return;
-      }
+      const user = await this.getUserByIdUseCase.execute(
+        res.locals.validatedParams.id,
+      );
 
       res.status(200).json({
         success: true,
-        data: user,
+        data: toUserResponseDto(user),
       });
     } catch (error) {
       next(error);
@@ -78,7 +56,7 @@ export class UserController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const { page, limit } = paginationSchema.parse(req.query);
+      const { page, limit } = res.locals.validatedQuery;
 
       const result = await this.getUsersUseCase.execute({
         page,
@@ -96,24 +74,15 @@ export class UserController {
   };
 
   update = async (
-    req: Request<{ id: string }>,
+    req: Request,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const id = Number(req.params.id);
-
-      if (!Number.isInteger(id) || id <= 0) {
-        res.status(400).json({
-          success: false,
-          message: "Invalid user ID",
-        });
-        return;
-      }
-
-      const validatedData = updateUserSchema.parse(req.body);
-
-      const user = await this.updateUserUseCase.execute(id, validatedData);
+      const user = await this.updateUserUseCase.execute(
+        res.locals.validatedParams.id,
+        req.body,
+      );
 
       res.status(200).json({
         success: true,

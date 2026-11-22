@@ -2,10 +2,8 @@ import type { Request, Response, NextFunction } from "express";
 
 import { RegisterUseCase } from "../../application/use-cases/auth/register.use-case.js";
 import { LoginUseCase } from "../../application/use-cases/auth/login.use-case.js";
-import { registerSchema } from "../validators/auth.validator.js";
-import { loginSchema } from "../validators/login.validator.js";
-import { toUserResponseDto } from "../dtos/user-response.dto.js";
 import { GetUserByIdUseCase } from "../../application/use-cases/user/get-user-by-id.use-case.js";
+import { toUserResponseDto } from "../dtos/user-response.dto.js";
 
 export class AuthController {
   constructor(
@@ -20,9 +18,7 @@ export class AuthController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const validatedData = registerSchema.parse(req.body);
-
-      const user = await this.registerUseCase.execute(validatedData);
+      const user = await this.registerUseCase.execute(req.body);
 
       res.status(201).json({
         success: true,
@@ -39,8 +35,7 @@ export class AuthController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const validatedData = loginSchema.parse(req.body);
-      const result = await this.loginUseCase.execute(validatedData);
+      const result = await this.loginUseCase.execute(req.body);
 
       res.status(200).json({
         success: true,
@@ -55,21 +50,13 @@ export class AuthController {
   };
 
   me = async (
-    req: Request,
+    _req: Request,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
     try {
       const userId = res.locals.auth.userId;
       const user = await this.getUserByIdUseCase.execute(userId);
-
-      if (!user) {
-        res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
-        return;
-      }
 
       res.status(200).json({
         success: true,
