@@ -23,6 +23,8 @@ app.use("/health", healthRoutes);
 app.use("/users", container.userRoutes);
 app.use("/auth", container.authRoutes);
 app.use("/admin", container.adminRoutes);
+app.use("/categories", container.categoryRoutes);
+app.use("/products", container.productRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Error handling

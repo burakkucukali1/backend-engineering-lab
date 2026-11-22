@@ -4,6 +4,7 @@ import type { CreateCategoryUseCase } from "../../application/use-cases/category
 import type { GetCategoryByIdUseCase } from "../../application/use-cases/category/get-category-by-id.use-case.js";
 import type { GetCategoriesUseCase } from "../../application/use-cases/category/get-categories.use-case.js";
 import type { UpdateCategoryUseCase } from "../../application/use-cases/category/update-category.use-case.js";
+import { toCategoryResponseDto } from "../dtos/category-response.dto.js";
 
 export class CategoryController {
   constructor(
@@ -21,7 +22,10 @@ export class CategoryController {
     try {
       const category = await this.createCategoryUseCase.execute(req.body);
 
-      res.status(201).json({ success: true, data: category });
+      res.status(201).json({
+        success: true,
+        data: toCategoryResponseDto(category),
+      });
     } catch (error) {
       next(error);
     }
@@ -37,7 +41,10 @@ export class CategoryController {
         res.locals.validatedParams.id,
       );
 
-      res.status(200).json({ success: true, data: category });
+      res.status(201).json({
+        success: true,
+        data: toCategoryResponseDto(category),
+      });
     } catch (error) {
       next(error);
     }
@@ -70,7 +77,10 @@ export class CategoryController {
         req.body,
       );
 
-      res.status(200).json({ success: true, data: category });
+      res.status(201).json({
+        success: true,
+        data: toCategoryResponseDto(category),
+      });
     } catch (error) {
       next(error);
     }

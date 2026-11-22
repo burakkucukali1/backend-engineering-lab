@@ -5,6 +5,8 @@ import type { GetProductByIdUseCase } from "../../application/use-cases/product/
 import type { GetProductsUseCase } from "../../application/use-cases/product/get-products.use-case.js";
 import type { UpdateProductUseCase } from "../../application/use-cases/product/update-product.use-case.js";
 
+import { toProductResponseDto } from "../dtos/product-response.dto.js";
+
 export class ProductController {
   constructor(
     private readonly createProductUseCase: CreateProductUseCase,
@@ -21,7 +23,10 @@ export class ProductController {
     try {
       const product = await this.createProductUseCase.execute(req.body);
 
-      res.status(201).json({ success: true, data: product });
+      res.status(201).json({
+        success: true,
+        data: toProductResponseDto(product),
+      });
     } catch (error) {
       next(error);
     }
@@ -37,7 +42,10 @@ export class ProductController {
         res.locals.validatedParams.id,
       );
 
-      res.status(200).json({ success: true, data: product });
+      res.status(200).json({
+        success: true,
+        data: toProductResponseDto(product),
+      });
     } catch (error) {
       next(error);
     }
@@ -53,7 +61,11 @@ export class ProductController {
 
       const result = await this.getProductsUseCase.execute(page, limit);
 
-      res.status(200).json({ success: true, ...result });
+      res.status(200).json({
+        success: true,
+        ...result,
+        data: result.data.map(toProductResponseDto),
+      });
     } catch (error) {
       next(error);
     }
@@ -70,7 +82,10 @@ export class ProductController {
         req.body,
       );
 
-      res.status(200).json({ success: true, data: product });
+      res.status(200).json({
+        success: true,
+        data: toProductResponseDto(product),
+      });
     } catch (error) {
       next(error);
     }

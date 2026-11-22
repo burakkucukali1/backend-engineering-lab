@@ -8,6 +8,8 @@ import {
   createProductSchema,
   updateProductSchema,
 } from "../validators/product.validator.js";
+import { validateQuery } from "../../middlewares/validate.middleware.js";
+import { paginationQuerySchema } from "../validators/pagination.validator.js";
 
 export function createProductRoutes(
   controller: ProductController,
@@ -23,7 +25,7 @@ export function createProductRoutes(
     controller.create,
   );
 
-  router.get("/", controller.findAll);
+  router.get("/", validateQuery(paginationQuerySchema), controller.findAll);
   router.get("/:id", controller.findById);
 
   router.patch(

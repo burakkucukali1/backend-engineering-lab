@@ -8,6 +8,8 @@ import {
   createCategorySchema,
   updateCategorySchema,
 } from "../validators/category.validator.js";
+import { validateQuery } from "../../middlewares/validate.middleware.js";
+import { paginationQuerySchema } from "../validators/pagination.validator.js";
 
 export function createCategoryRoutes(
   controller: CategoryController,
@@ -23,7 +25,7 @@ export function createCategoryRoutes(
     controller.create,
   );
 
-  router.get("/", controller.findAll);
+  router.get("/", validateQuery(paginationQuerySchema), controller.findAll);
   router.get("/:id", controller.findById);
 
   router.patch(
