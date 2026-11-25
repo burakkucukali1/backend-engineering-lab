@@ -4,6 +4,8 @@ import { prisma } from "./infrastructure/database/prisma/client.js";
 import { PrismaUserRepository } from "./infrastructure/database/prisma/prisma-user.repository.js";
 import { PrismaCategoryRepository } from "./infrastructure/database/prisma/prisma-category.repository.js";
 import { PrismaProductRepository } from "./infrastructure/database/prisma/prisma-product.repository.js";
+import { PrismaCartRepository } from "./infrastructure/database/prisma/prisma-cart.repository.js";
+import { PrismaOrderRepository } from "./infrastructure/database/prisma/prisma-order.repository.js";
 
 // User Use Cases
 import { CreateUserUseCase } from "./application/use-cases/user/create-user.use-case.js";
@@ -27,6 +29,13 @@ import { GetProductByIdUseCase } from "./application/use-cases/product/get-produ
 import { GetProductsUseCase } from "./application/use-cases/product/get-products.use-case.js";
 import { UpdateProductUseCase } from "./application/use-cases/product/update-product.use-case.js";
 
+// Cart Use Cases
+import { AddItemToCartUseCase } from "./application/use-cases/cart/add-item-to-cart.use-case.js";
+import { GetCartUseCase } from "./application/use-cases/cart/get-cart.use-case.js";
+import { RemoveCartItemUseCase } from "./application/use-cases/cart/remove-cart-item.use-case.js";
+import { CheckoutUseCase } from "./application/use-cases/order/checkout.use-case.js";
+import { UpdateOrderStatusUseCase } from "./application/use-cases/order/update-order-status.use-case.js";
+
 // Security
 import { Argon2PasswordHasher } from "./infrastructure/security/argon2-password-hasher.js";
 import { JoseTokenService } from "./infrastructure/security/jose-token-service.js";
@@ -38,6 +47,8 @@ import { AuthController } from "./presentation/controllers/auth.controller.js";
 import { AdminController } from "./presentation/controllers/admin.controller.js";
 import { CategoryController } from "./presentation/controllers/category.controller.js";
 import { ProductController } from "./presentation/controllers/product.controller.js";
+import { CartController } from "./presentation/controllers/cart.controller.js";
+import { OrderController } from "./presentation/controllers/order.controller.js";
 
 // Routes
 import { createUserRoutes } from "./presentation/routes/user.routes.js";
@@ -45,12 +56,16 @@ import { createAuthRoutes } from "./presentation/routes/auth.routes.js";
 import { createAdminRoutes } from "./presentation/routes/admin.routes.js";
 import { createCategoryRoutes } from "./presentation/routes/category.routes.js";
 import { createProductRoutes } from "./presentation/routes/product.routes.js";
+import { createCartRoutes } from "./presentation/routes/cart.routes.js";
+import { createOrderRoutes } from "./presentation/routes/order.routes.js";
 
 export function createContainer() {
   // Repositories
   const userRepository = new PrismaUserRepository(prisma);
   const categoryRepository = new PrismaCategoryRepository();
   const productRepository = new PrismaProductRepository();
+  const cartRepository = new PrismaCartRepository();
+  const orderRepository = new PrismaOrderRepository();
 
   // Security services
   const passwordHasher = new Argon2PasswordHasher();
@@ -88,9 +103,27 @@ export function createContainer() {
     categoryRepository,
   );
 
+  // Cart Use Cases
+  const addItemToCartUseCase = new AddItemToCartUseCase(
+    cartRepository,
+    productRepository,
+  );
+  const getCartUseCase = new GetCartUseCase(cartRepository);
+  const removeCartItemUseCase = new RemoveCartItemUseCase(cartRepository);
+
+  // Order Use Cases
+  // Order Use Cases
+  const checkoutUseCase = new CheckoutUseCase(orderRepository);
+  const updateOrderStatusUseCase = new UpdateOrderStatusUseCase(
+    orderRepository,
+  );
   // Controllers
   const adminController = new AdminController();
-
+  const orderController = new OrderController(
+    checkoutUseCase,
+    orderRepository,
+    updateOrderStatusUseCase,
+  );
   const authController = new AuthController(
     registerUseCase,
     loginUseCase,
@@ -118,6 +151,12 @@ export function createContainer() {
     updateProductUseCase,
   );
 
+  const cartController = new CartController(
+    addItemToCartUseCase,
+    getCartUseCase,
+    removeCartItemUseCase,
+  );
+
   // Middleware
   const authMiddleware = createAuthMiddleware(tokenService, userRepository);
 
@@ -130,13 +169,17 @@ export function createContainer() {
     authMiddleware,
   );
   const productRoutes = createProductRoutes(productController, authMiddleware);
+  const cartRoutes = createCartRoutes(cartController, authMiddleware);
 
+  const orderRoutes = createOrderRoutes(orderController, authMiddleware);
   return {
     userRoutes,
     authRoutes,
     adminRoutes,
     categoryRoutes,
     productRoutes,
+    cartRoutes,
+    orderRoutes,
     authMiddleware,
   };
 }

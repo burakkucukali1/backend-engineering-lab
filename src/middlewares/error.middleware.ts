@@ -4,6 +4,7 @@ import { ZodError } from "zod";
 import { UserAlreadyExistsError } from "../application/errors/user-already-exists.error.js";
 import { UserNotFoundError } from "../application/errors/user-not-found.error.js";
 import { InvalidCredentialsError } from "../application/errors/invalid-credentials.error.js";
+import { CheckoutConflictError } from "../application/errors/checkout-conflict.error.js";
 
 export function errorMiddleware(
   error: unknown,
@@ -28,7 +29,10 @@ export function errorMiddleware(
     return;
   }
 
-  if (error instanceof UserAlreadyExistsError) {
+  if (
+    error instanceof UserAlreadyExistsError ||
+    error instanceof CheckoutConflictError
+  ) {
     res.status(409).json({
       success: false,
       message: error.message,

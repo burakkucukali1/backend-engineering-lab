@@ -25,6 +25,8 @@ app.use("/auth", container.authRoutes);
 app.use("/admin", container.adminRoutes);
 app.use("/categories", container.categoryRoutes);
 app.use("/products", container.productRoutes);
+app.use("/cart", container.cartRoutes);
+app.use("/orders", container.orderRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Error handling
