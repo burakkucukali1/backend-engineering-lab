@@ -2,13 +2,16 @@ import type { Request, Response, NextFunction } from "express";
 
 import { CheckoutUseCase } from "../../application/use-cases/order/checkout.use-case.js";
 import { UpdateOrderStatusUseCase } from "../../application/use-cases/order/update-order-status.use-case.js";
-import type { OrderRepository } from "../../domain/repositories/order.repository.js";
+import { GetMyOrdersUseCase } from "../../application/use-cases/order/get-my-orders.use-case.js";
+import { GetOrderByIdUseCase } from "../../application/use-cases/order/get-order-by-id.use-case.js";
+
 import { toOrderResponseDto } from "../dtos/order-response.dto.js";
 
 export class OrderController {
   constructor(
     private readonly checkoutUseCase: CheckoutUseCase,
-    private readonly orderRepository: OrderRepository,
+    private readonly getMyOrdersUseCase: GetMyOrdersUseCase,
+    private readonly getOrderByIdUseCase: GetOrderByIdUseCase,
     private readonly updateOrderStatusUseCase: UpdateOrderStatusUseCase,
   ) {}
 
@@ -37,7 +40,7 @@ export class OrderController {
   ): Promise<void> => {
     try {
       const userId = res.locals.auth.userId as number;
-      const orders = await this.orderRepository.findByUserId(userId);
+      const orders = await this.getMyOrdersUseCase.execute(userId);
 
       res.status(200).json({
         success: true,
@@ -65,15 +68,7 @@ export class OrderController {
         return;
       }
 
-      const order = await this.orderRepository.findById(orderId);
-
-      if (!order || order.userId !== userId) {
-        res.status(404).json({
-          success: false,
-          message: "Order not found",
-        });
-        return;
-      }
+      const order = await this.getOrderByIdUseCase.execute(orderId, userId);
 
       res.status(200).json({
         success: true,

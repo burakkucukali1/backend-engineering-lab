@@ -36,6 +36,10 @@ import { RemoveCartItemUseCase } from "./application/use-cases/cart/remove-cart-
 import { CheckoutUseCase } from "./application/use-cases/order/checkout.use-case.js";
 import { UpdateOrderStatusUseCase } from "./application/use-cases/order/update-order-status.use-case.js";
 
+// Order Use Cases
+import { GetMyOrdersUseCase } from "./application/use-cases/order/get-my-orders.use-case.js";
+import { GetOrderByIdUseCase } from "./application/use-cases/order/get-order-by-id.use-case.js";
+
 // Security
 import { Argon2PasswordHasher } from "./infrastructure/security/argon2-password-hasher.js";
 import { JoseTokenService } from "./infrastructure/security/jose-token-service.js";
@@ -112,16 +116,19 @@ export function createContainer() {
   const removeCartItemUseCase = new RemoveCartItemUseCase(cartRepository);
 
   // Order Use Cases
-  // Order Use Cases
   const checkoutUseCase = new CheckoutUseCase(orderRepository);
   const updateOrderStatusUseCase = new UpdateOrderStatusUseCase(
     orderRepository,
   );
+  const getMyOrdersUseCase = new GetMyOrdersUseCase(orderRepository);
+  const getOrderByIdUseCase = new GetOrderByIdUseCase(orderRepository);
+
   // Controllers
   const adminController = new AdminController();
   const orderController = new OrderController(
     checkoutUseCase,
-    orderRepository,
+    getMyOrdersUseCase,
+    getOrderByIdUseCase,
     updateOrderStatusUseCase,
   );
   const authController = new AuthController(
@@ -129,28 +136,24 @@ export function createContainer() {
     loginUseCase,
     getUserByIdUseCase,
   );
-
   const userController = new UserController(
     createUserUseCase,
     getUserByIdUseCase,
     getUsersUseCase,
     updateUserUseCase,
   );
-
   const categoryController = new CategoryController(
     createCategoryUseCase,
     getCategoryByIdUseCase,
     getCategoriesUseCase,
     updateCategoryUseCase,
   );
-
   const productController = new ProductController(
     createProductUseCase,
     getProductByIdUseCase,
     getProductsUseCase,
     updateProductUseCase,
   );
-
   const cartController = new CartController(
     addItemToCartUseCase,
     getCartUseCase,
